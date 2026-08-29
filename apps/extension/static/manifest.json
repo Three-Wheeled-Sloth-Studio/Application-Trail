@@ -1,9 +1,13 @@
 {
   "manifest_version": 3,
   "name": "Application Trail",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Capture job opportunities and applications into Application Trail.",
-  "permissions": ["activeTab", "storage", "tabs"],
+  "permissions": ["activeTab", "scripting", "storage", "tabs"],
+  "host_permissions": [
+    "http://127.0.0.1:4310/*",
+    "http://localhost:4310/*"
+  ],
   "action": {
     "default_title": "Capture with Application Trail",
     "default_popup": "popup.html"

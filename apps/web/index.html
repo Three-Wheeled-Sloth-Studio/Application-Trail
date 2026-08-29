@@ -12,9 +12,22 @@
       <h1>Application Trail</h1>
       <p>Capture where you apply. Learn from the trail.</p>
       <section class="status" aria-live="polite">
-        <strong>WP0</strong>
+        <strong>WP2</strong>
         <span id="status">Web shell ready.</span>
       </section>
+      <article id="record" class="record" hidden>
+        <h2 id="record-title"></h2>
+        <p><strong id="record-company"></strong></p>
+        <dl>
+          <dt>Status</dt><dd id="record-status"></dd>
+          <dt>Location</dt><dd id="record-location"></dd>
+        </dl>
+        <a id="record-source" target="_blank" rel="noreferrer"></a>
+        <details>
+          <summary>Captured source text</summary>
+          <pre id="record-source-text"></pre>
+        </details>
+      </article>
     </main>
     <script type="module" src="./main.js"></script>
   </body>

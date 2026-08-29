@@ -13,6 +13,7 @@
       dd { margin: 2px 0 0; overflow-wrap: anywhere; }
       button { width: 100%; padding: 9px; margin-top: 8px; }
       .note { font-size: 0.8rem; opacity: 0.75; }
+      #capture-status { min-height: 1.2rem; }
     </style>
   </head>
   <body>
@@ -21,10 +22,15 @@
       <dl>
         <dt>Page</dt><dd id="page-title">Reading active page...</dd>
         <dt>URL</dt><dd id="page-url"></dd>
+        <dt>Detected title</dt><dd id="detected-title">Inspecting...</dd>
+        <dt>Detected company</dt><dd id="detected-company">Inspecting...</dd>
+        <dt>Detected location</dt><dd id="detected-location">Inspecting...</dd>
       </dl>
-      <button id="save" type="button" disabled>Save job (WP1)</button>
-      <button id="applied" type="button" disabled>Mark applied (WP1)</button>
-      <p class="note">WP0 proves the extension seam. Canonical persistence is next.</p>
+      <button id="save" type="button" disabled>Save job</button>
+      <button id="applied" type="button" disabled>I applied</button>
+      <button id="open-record" type="button" hidden>Open full record</button>
+      <p id="capture-status" class="note" aria-live="polite">Preparing capture...</p>
+      <p class="note">WP2 uses a local development identity until Google sign-in lands in WP3.</p>
     </main>
     <script type="module" src="popup.js"></script>
   </body>

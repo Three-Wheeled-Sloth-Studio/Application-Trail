@@ -58,6 +58,17 @@ function isCaptureListingInput(value: unknown): value is CaptureListingInput {
 export function createRequestHandler(store?: ApplicationTrailStore) {
   return async function requestHandler(request: IncomingMessage, response: ServerResponse): Promise<void> {
     const url = new URL(request.url ?? '/', 'http://localhost');
+    if (process.env.APPLICATION_TRAIL_ENABLE_DEV_IDENTITY === 'true') {
+      response.setHeader('access-control-allow-origin', '*');
+      response.setHeader('access-control-allow-methods', 'GET,POST,OPTIONS');
+      response.setHeader('access-control-allow-headers', 'content-type,x-application-trail-user-id');
+    }
+
+    if (request.method === 'OPTIONS') {
+      response.writeHead(204);
+      response.end();
+      return;
+    }
 
     if (request.method === 'GET' && (url.pathname === '/' || url.pathname === '/health')) {
       sendJson(response, 200, buildApiInfo());
