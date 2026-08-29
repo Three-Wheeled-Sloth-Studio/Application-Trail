@@ -19,7 +19,9 @@ The longer-term goal is to turn that accumulated trail into useful market intell
 - Prefer local AI through Ollama, while supporting user-provided hosted provider keys.
 - Dogfood first without creating architectural traps that prevent later productization.
 
-## Planned system shape
+## Current implementation
+
+The first local capture vertical slice is implemented:
 
 ```text
 Chromium extension -----> Application API -----> PostgreSQL
@@ -28,18 +30,67 @@ Chromium extension -----> Application API -----> PostgreSQL
        +---- full app tab -----+
 
 Web application --------> Application API
-       |
-       +---- optional local AI bridge ----> Ollama
-                                      +----> hosted AI provider
 ```
 
-Google OAuth is the preferred initial identity provider.
+The extension can inspect a job page, preview generic schema.org JobPosting metadata when available, preserve visible source text, save as Saved or Applied, and open the stored record in the web application.
 
-## Repository status
+Google OAuth is the next identity step. The current local vertical slice uses an explicitly gated development identity only when `APPLICATION_TRAIL_ENABLE_DEV_IDENTITY=true`.
 
-The repository is in product and architecture bootstrap. The first implementation target is a thin vertical slice that can capture one real job posting, preserve its source, persist it through the API, and retrieve it from another browser session.
+## Local WP2 smoke setup
 
-See `refs/README.md` for the project documentation map.
+Requires Node.js 22+ and PostgreSQL. Docker Compose can provide the development database.
+
+```text
+npm install
+```
+
+Copy `.env.example` to `.env.local`, then set:
+
+```text
+APPLICATION_TRAIL_ENABLE_DEV_IDENTITY=true
+```
+
+Start the bundled development Postgres instance:
+
+```text
+docker compose up -d
+```
+
+Build and migrate:
+
+```text
+npm run build
+npm run migrate
+```
+
+Start the API and web application in separate terminals:
+
+```text
+npm run start:api
+```
+
+```text
+npm run start:web
+```
+
+In Chrome or Edge:
+
+1. Open the extensions management page.
+2. Enable Developer mode.
+3. Choose Load unpacked.
+4. Select `apps/extension/dist`.
+5. Open a job listing and activate Application Trail.
+6. Review the detected title/company/location.
+7. Choose Save job or I applied.
+8. Choose Open full record to verify persistence and the return-to-source link.
+
+The current local development URLs are API port `4310` and web port `4320`.
+
+## Validation
+
+CI typechecks and builds all workspaces and runs the PostgreSQL integration test against PostgreSQL 17.
+
+See `refs/handoffs/currentHandoff.md` for the current accepted checkpoint and `refs/README.md` for the documentation map.
 
 ## License
 

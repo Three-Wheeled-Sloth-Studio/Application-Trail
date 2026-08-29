@@ -2,7 +2,7 @@ name: Application Trail
 repository: Three-Wheeled-Sloth-Studio/Application-Trail
 visibility: public
 license: AGPL-3.0
-status: architecture-bootstrap
+status: wp2-browser-smoke
 product_type: hosted-service-with-public-code
 
 purpose: >
@@ -20,6 +20,7 @@ initial_user:
 identity:
   initial_provider: Google OAuth
   custom_password_auth_mvp: false
+  current_implementation: gated-local-development-identity
 
 persistence:
   canonical_store: PostgreSQL
@@ -47,7 +48,13 @@ core_invariants:
   - extension_is_capture_surface_not_primary_management_ui
   - secrets_and_user_data_never_enter_public_git
 
-first_executable_goal: >
-  Capture one real listing from a Chromium extension, create or associate an
-  Opportunity and Listing Observation, preserve source evidence, persist it
-  through the API to PostgreSQL, and retrieve it in the web application.
+current_executable_slice: >
+  A Chromium Manifest V3 extension can inspect a real page, preview generic
+  JobPosting metadata, save as Saved or Applied through the API, persist an
+  Opportunity plus Listing Observation and immutable Snapshot in PostgreSQL,
+  and open the persisted record in the local web application.
+
+next_gate: >
+  Manually smoke the WP2 extension against real job listings in Chrome or Edge,
+  then replace the temporary development identity with Google OAuth for the
+  cross-machine dogfood gate.
