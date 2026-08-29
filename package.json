@@ -8,8 +8,8 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present",
+    "build": "npm run build -w @application-trail/domain && npm run build -w @application-trail/api && npm run build -w @application-trail/extension && npm run build -w @application-trail/web",
+    "typecheck": "npm run build -w @application-trail/domain && npm run typecheck --workspaces --if-present",
     "test": "npm run build && node --test tests/*.test.mjs",
     "validate": "npm run typecheck && npm test"
   },

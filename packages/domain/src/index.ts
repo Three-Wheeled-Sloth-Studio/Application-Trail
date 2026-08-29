@@ -133,3 +133,32 @@ export interface ResumeArtifact {
   renderedTitle: string;
   createdAt: string;
 }
+
+export interface CaptureListingInput {
+  sourceSite: string;
+  sourceUrl: string;
+  pageTitle: string;
+  sourceText: string;
+  publishedTitle: string;
+  publishedCompanyName: string;
+  externalJobId?: string;
+  observedLocationText?: string;
+  structuredMetadata?: Readonly<Record<string, unknown>>;
+  normalizedTitle?: string;
+  canonicalCompanyName?: string;
+  status: 'saved' | 'applied';
+  observedAt?: string;
+}
+
+export interface ListingRecord {
+  observation: ListingObservation;
+  snapshot: ListingSnapshot;
+}
+
+export interface OpportunityRecord {
+  opportunity: Opportunity;
+  company?: Company;
+  listings: readonly ListingRecord[];
+  application?: Application;
+  events: readonly ApplicationEvent[];
+}
