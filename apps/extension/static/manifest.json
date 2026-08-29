@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Application Trail",
+  "version": "0.1.0",
+  "description": "Capture job opportunities and applications into Application Trail.",
+  "permissions": ["activeTab", "storage", "tabs"],
+  "action": {
+    "default_title": "Capture with Application Trail",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  }
+}

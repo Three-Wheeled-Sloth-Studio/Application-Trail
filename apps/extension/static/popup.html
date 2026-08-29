@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Application Trail</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 0; width: 360px; }
+      main { padding: 16px; }
+      h1 { font-size: 1.1rem; margin: 0 0 12px; }
+      dl { margin: 0 0 16px; }
+      dt { font-size: 0.75rem; font-weight: 700; margin-top: 8px; text-transform: uppercase; }
+      dd { margin: 2px 0 0; overflow-wrap: anywhere; }
+      button { width: 100%; padding: 9px; margin-top: 8px; }
+      .note { font-size: 0.8rem; opacity: 0.75; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Application Trail</h1>
+      <dl>
+        <dt>Page</dt><dd id="page-title">Reading active page...</dd>
+        <dt>URL</dt><dd id="page-url"></dd>
+      </dl>
+      <button id="save" type="button" disabled>Save job (WP1)</button>
+      <button id="applied" type="button" disabled>Mark applied (WP1)</button>
+      <p class="note">WP0 proves the extension seam. Canonical persistence is next.</p>
+    </main>
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>
