@@ -1,0 +1,53 @@
+name: Application Trail
+repository: Three-Wheeled-Sloth-Studio/Application-Trail
+visibility: public
+license: AGPL-3.0
+status: architecture-bootstrap
+product_type: hosted-service-with-public-code
+
+purpose: >
+  Capture job opportunities and applications with minimal browser friction,
+  preserve historical listing evidence, synchronize records across machines,
+  and derive job-market intelligence that improves durable resume positioning.
+
+initial_user:
+  mode: dogfood-first
+  multi_machine_required: true
+  primary_browser_targets:
+    - Chrome
+    - Edge
+
+identity:
+  initial_provider: Google OAuth
+  custom_password_auth_mvp: false
+
+persistence:
+  canonical_store: PostgreSQL
+  current_hosting_option: Hostinger VPS
+  browser_storage_canonical: false
+
+ai:
+  local_preference: Ollama
+  hosted_byok_supported: true
+  provider_neutral_boundary: required
+  reference_project: Three-Wheeled-Sloth-Studio/Review-Room
+
+mvp_statuses:
+  - saved
+  - applied
+  - passed
+
+core_invariants:
+  - preserve_source_url_and_job_description
+  - separate_opportunity_from_listing_observation
+  - distinguish_source_from_derived_data
+  - preserve_original_and_normalized_wording
+  - user_corrections_survive_reprocessing
+  - flag_possible_duplicates_and_reposts
+  - extension_is_capture_surface_not_primary_management_ui
+  - secrets_and_user_data_never_enter_public_git
+
+first_executable_goal: >
+  Capture one real listing from a Chromium extension, create or associate an
+  Opportunity and Listing Observation, preserve source evidence, persist it
+  through the API to PostgreSQL, and retrieve it in the web application.

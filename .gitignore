@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+coverage/
+.vite/
+.turbo/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Local databases / dumps
+*.db
+*.sqlite
+*.sqlite3
+*.dump
+*.sql.gz
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Extension packaging
+*.crx
+*.pem
+extension-build/
+
+# User artifacts and private local data
+local-data/
+private-data/
+resumes/
+exports/
