@@ -36,30 +36,36 @@ The extension can inspect a job page, preview generic schema.org JobPosting meta
 
 Google OAuth is the next identity step. The current local vertical slice uses an explicitly gated development identity only when `APPLICATION_TRAIL_ENABLE_DEV_IDENTITY=true`.
 
+## PostgreSQL environment
+
+Application Trail uses its own PostgreSQL database and application user on the existing studio PostgreSQL server. It does not share World Forge/Parchment Worlds tables or application permissions.
+
+For local Windows dogfooding, the standard path is an SSH tunnel to that existing PostgreSQL service. The ignored `.env.local` holds the local `DATABASE_URL` using loopback port `55432`.
+
+Docker Compose remains available only as an optional disposable local database and for CI-style isolation. Docker is not required to run Application Trail locally when the shared development database is reachable.
+
 ## Local WP2 smoke setup
 
-Requires Node.js 22+ and PostgreSQL. Docker Compose can provide the development database.
+Requires Node.js 22+ and access to PostgreSQL.
+
+Install dependencies and build:
 
 ```text
 npm install
+npm run build
 ```
 
-Copy `.env.example` to `.env.local`, then set:
+Ensure `.env.local` contains the configured `DATABASE_URL` and:
 
 ```text
 APPLICATION_TRAIL_ENABLE_DEV_IDENTITY=true
 ```
 
-Start the bundled development Postgres instance:
+When using the existing studio PostgreSQL server, open the configured SSH tunnel in a separate terminal before migration or API startup. The local database connection uses `127.0.0.1:55432`.
+
+Run migrations:
 
 ```text
-docker compose up -d
-```
-
-Build and migrate:
-
-```text
-npm run build
 npm run migrate
 ```
 
@@ -85,6 +91,16 @@ In Chrome or Edge:
 8. Choose Open full record to verify persistence and the return-to-source link.
 
 The current local development URLs are API port `4310` and web port `4320`.
+
+## Optional disposable PostgreSQL
+
+Developers who prefer an isolated local database may use Docker Compose:
+
+```text
+docker compose up -d
+```
+
+This is optional for local development. CI uses an isolated PostgreSQL service so integration tests can create, migrate, and destroy data without touching persistent development data.
 
 ## Validation
 
