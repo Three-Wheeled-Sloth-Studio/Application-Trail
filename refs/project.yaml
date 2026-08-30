@@ -2,7 +2,7 @@ name: Application Trail
 repository: Three-Wheeled-Sloth-Studio/Application-Trail
 visibility: public
 license: AGPL-3.0
-status: wp2-browser-smoke
+status: wp3-design-review
 product_type: hosted-service-with-public-code
 
 purpose: >
@@ -18,14 +18,24 @@ initial_user:
     - Edge
 
 identity:
-  initial_provider: Google OAuth
+  intended_provider: Google OAuth
   custom_password_auth_mvp: false
   current_implementation: gated-local-development-identity
+  wp3_auth_design_status: review-required
 
 persistence:
   canonical_store: PostgreSQL
   current_hosting_option: Hostinger VPS
   browser_storage_canonical: false
+  shared_server_with_other_studio_apps: true
+  independent_application_database: application_trail
+
+hosting:
+  production_web_domain: not-yet-selected
+  production_api_url: not-yet-selected
+  production_web_deployment: not-yet-selected
+  local_web_url: http://127.0.0.1:4320
+  local_api_url: http://127.0.0.1:4310
 
 ai:
   local_preference: Ollama
@@ -52,9 +62,11 @@ current_executable_slice: >
   A Chromium Manifest V3 extension can inspect a real page, preview generic
   JobPosting metadata, save as Saved or Applied through the API, persist an
   Opportunity plus Listing Observation and immutable Snapshot in PostgreSQL,
-  and open the persisted record in the local web application.
+  and open the persisted record in the local web application. Manual WP2 smoke
+  passed against a real job listing and the application was successfully marked Applied.
 
 next_gate: >
-  Manually smoke the WP2 extension against real job listings in Chrome or Edge,
-  then replace the temporary development identity with Google OAuth for the
-  cross-machine dogfood gate.
+  Review and approve the WP3 deployment and authentication topology before implementation.
+  In particular, choose the hosted web/API arrangement and production domain/URL strategy,
+  then confirm the Google OAuth redirect/session approach. Do not implement WP3 authentication
+  until this review is complete.
