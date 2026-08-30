@@ -26,9 +26,11 @@ WP1 GitHub Actions run #2 (`33265952117`) passed against PostgreSQL 17, includin
 - applied capture creating an application event
 - Applied -> Passed creating a status-change event
 
-WP2 GitHub Actions run #3 (`33266190178`) completed its validation job with all steps green, including typecheck, build/tests, and the PostgreSQL integration test.
+WP2 GitHub Actions run #3 (`33266190178`) passed, including typecheck, build/tests, and the PostgreSQL integration test.
 
-Local WP2 validation also passed:
+Documentation head run #4 (`33266265265`) also passed.
+
+Local WP2 validation passed:
 
 - `npm run typecheck`
 - `npm test`
@@ -56,6 +58,26 @@ The first migration creates ownership-aware tables for:
 - resume artifact metadata
 - application
 - application event
+
+### Shared PostgreSQL environment
+
+Application Trail has been provisioned on the existing studio PostgreSQL server already used by World Forge/Parchment Worlds, while retaining an independent database and application user.
+
+Provisioned logical boundary:
+
+- database: `application_trail`
+- application user: `application_trail`
+- PostgreSQL listener is not publicly exposed
+- local Windows development connects through an SSH tunnel to loopback port `55432`
+- future VPS/container deployment can connect through the existing internal PostgreSQL network service
+
+The current migration `001_core.sql` has been applied successfully to the persistent Application Trail database. Synthetic rollback-only CRUD succeeded, and the Application Trail user was verified not to have access to the World Forge/Parchment Worlds application tables.
+
+The database password remains outside Git. Local development configuration is already present in ignored `.env.local` and the VPS secret is stored outside the repository.
+
+Docker is not required for the normal Application Trail dogfood workflow. It remains an optional disposable local database path and an isolated CI mechanism.
+
+Root npm commands `migrate`, `start:api`, and `start:web` explicitly load `.env.local` through Node's `--env-file` support.
 
 ### API
 
@@ -108,21 +130,20 @@ The current web shell can load one captured Opportunity by ID and display:
 
 Before WP3, run the current slice against several real job listings in Chrome or Edge.
 
-Suggested local setup:
+Standard local setup now uses the persistent shared PostgreSQL environment rather than requiring Docker:
 
 1. `npm install`
-2. Copy `.env.example` to `.env.local`.
-3. Set `APPLICATION_TRAIL_ENABLE_DEV_IDENTITY=true` in `.env.local`.
-4. Start local PostgreSQL with `docker compose up -d` or point `DATABASE_URL` to another development Postgres instance.
-5. `npm run build`
-6. `npm run migrate`
-7. In one terminal: `npm run start:api`
-8. In another terminal: `npm run start:web`
-9. In Chrome/Edge extension developer mode, load unpacked `apps/extension/dist`.
-10. Open a real job listing and activate Application Trail.
-11. Confirm detected title/company/location are reasonable.
-12. Save the role or mark it Applied.
-13. Open the full record and verify the original URL and source text are present.
+2. `npm run build`
+3. Confirm ignored `.env.local` contains the provisioned `DATABASE_URL` and `APPLICATION_TRAIL_ENABLE_DEV_IDENTITY=true`.
+4. Open the configured SSH tunnel to the studio PostgreSQL host, forwarding local port `55432` to server loopback PostgreSQL port `5432`.
+5. `npm run migrate`
+6. In one terminal: `npm run start:api`
+7. In another terminal: `npm run start:web`
+8. In Chrome/Edge extension developer mode, load unpacked `apps/extension/dist`.
+9. Open a real job listing and activate Application Trail.
+10. Confirm detected title/company/location are reasonable.
+11. Save the role or mark it Applied.
+12. Open the full record and verify the original URL and source text are present.
 
 Useful smoke targets should include at least one page with schema.org JobPosting metadata and one page where generic fallback is required.
 
