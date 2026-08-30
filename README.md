@@ -21,7 +21,7 @@ The longer-term goal is to turn that accumulated trail into useful market intell
 
 ## Current implementation
 
-The first local capture vertical slice is implemented:
+The first browser-to-database capture vertical slice is implemented and manually validated:
 
 ```text
 Chromium extension -----> Application API -----> PostgreSQL
@@ -32,9 +32,13 @@ Chromium extension -----> Application API -----> PostgreSQL
 Web application --------> Application API
 ```
 
-The extension can inspect a job page, preview generic schema.org JobPosting metadata when available, preserve visible source text, save as Saved or Applied, and open the stored record in the web application.
+The extension can inspect a real job page, preview generic schema.org `JobPosting` metadata when available, preserve visible source text, save as Saved or Applied, and open the stored record in the web application.
 
-Google OAuth is the next identity step. The current local vertical slice uses an explicitly gated development identity only when `APPLICATION_TRAIL_ENABLE_DEV_IDENTITY=true`.
+A real job listing has been successfully captured and marked `Applied` against the persistent Application Trail PostgreSQL database. WP2 is accepted.
+
+The project is currently at a **WP3 design-review checkpoint**. Google OAuth remains the intended identity direction, but implementation is intentionally paused until the production web/API hosting and domain topology are reviewed. No production Application Trail web domain or API URL has been selected yet.
+
+The current local vertical slice continues to use an explicitly gated development identity only when `APPLICATION_TRAIL_ENABLE_DEV_IDENTITY=true`.
 
 ## PostgreSQL environment
 
@@ -44,7 +48,7 @@ For local Windows dogfooding, the standard path is an SSH tunnel to that existin
 
 Docker Compose remains available only as an optional disposable local database and for CI-style isolation. Docker is not required to run Application Trail locally when the shared development database is reachable.
 
-## Local WP2 smoke setup
+## Local WP2 setup
 
 Requires Node.js 22+ and access to PostgreSQL.
 
@@ -101,6 +105,20 @@ docker compose up -d
 ```
 
 This is optional for local development. CI uses an isolated PostgreSQL service so integration tests can create, migrate, and destroy data without touching persistent development data.
+
+## Next gate
+
+Before WP3 implementation, review and approve:
+
+- production/dogfood web domain strategy
+- production API hostname/origin strategy
+- Hostinger VPS deployment topology
+- Google OAuth redirect/origin requirements
+- extension sign-in handoff
+- Application Trail session model for web and extension
+- minimum cross-machine dogfood deployment
+
+See `refs/handoffs/currentHandoff.md` and `refs/handoffs/next-dev-prompt.md` for the exact review checkpoint.
 
 ## Validation
 
