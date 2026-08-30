@@ -21,110 +21,101 @@ The longer-term goal is to turn that accumulated trail into useful market intell
 
 ## Current implementation
 
-The first browser-to-database capture vertical slice is implemented and manually validated:
+WP0 through WP2 are accepted. The repository side of WP3 is implemented and CI-green; hosted deployment and live Google/cross-machine smoke remain.
+
+Current target topology:
 
 ```text
-Chromium extension -----> Application API -----> PostgreSQL
-       |                       ^
-       |                       |
-       +---- full app tab -----+
-
-Web application --------> Application API
+Chromium extension -----> https://trail.threewheeledsloth.com
+                                  |
+                                  +-- /        web application
+                                  +-- /api/*   Application Trail API
+                                  +-- /auth/*  Google/session boundary
+                                                   |
+                                                   v
+                                              PostgreSQL
+                                                private
 ```
 
-The extension can inspect a real job page, preview generic schema.org `JobPosting` metadata when available, preserve visible source text, save as Saved or Applied, and open the stored record in the web application.
+The extension captures generic job-page evidence, saves as Saved or Applied, and can open the full synchronized record. The web application now includes Google sign-in plumbing and a minimal opportunity list required for cross-machine retrieval.
 
-A real job listing has been successfully captured and marked `Applied` against the persistent Application Trail PostgreSQL database. WP2 is accepted.
+Google authentication is server-mediated. Google's stable `sub` maps to the existing internal Application Trail UUID. The application persists opaque Application Trail session hashes, not Google access tokens.
 
-The project is currently at a **WP3 design-review checkpoint**. Google OAuth remains the intended identity direction, but implementation is intentionally paused until the production web/API hosting and domain topology are reviewed. No production Application Trail web domain or API URL has been selected yet.
+See `refs/deployment/wp3-hosted-deployment.md` for the hosted deployment contract.
 
-The current local vertical slice continues to use an explicitly gated development identity only when `APPLICATION_TRAIL_ENABLE_DEV_IDENTITY=true`.
+## Local development
 
-## PostgreSQL environment
+Requires Node.js 22+ and PostgreSQL access.
 
-Application Trail uses its own PostgreSQL database and application user on the existing studio PostgreSQL server. It does not share World Forge/Parchment Worlds tables or application permissions.
-
-For local Windows dogfooding, the standard path is an SSH tunnel to that existing PostgreSQL service. The ignored `.env.local` holds the local `DATABASE_URL` using loopback port `55432`.
-
-Docker Compose remains available only as an optional disposable local database and for CI-style isolation. Docker is not required to run Application Trail locally when the shared development database is reachable.
-
-## Local WP2 setup
-
-Requires Node.js 22+ and access to PostgreSQL.
-
-Install dependencies and build:
+Install dependencies and create ignored local configuration:
 
 ```text
 npm install
-npm run build
+copy .env.example .env.local
 ```
 
-Ensure `.env.local` contains the configured `DATABASE_URL` and:
+Fill in the local values in `.env.local`.
+
+Normal startup is now one command:
+
+```text
+npm run dev
+```
+
+`npm run dev` builds the repository, starts the configured SSH PostgreSQL tunnel when `APPLICATION_TRAIL_SSH_HOST` is present, waits for the database, applies migrations, starts the API, and starts the local same-origin web proxy. Ctrl+C shuts the stack down together.
+
+For the existing studio PostgreSQL tunnel pattern, configure these ignored local variables instead of manually opening a tunnel terminal:
+
+```text
+APPLICATION_TRAIL_SSH_HOST=<ssh-user-and-host>
+APPLICATION_TRAIL_SSH_LOCAL_PORT=55432
+APPLICATION_TRAIL_SSH_REMOTE_HOST=127.0.0.1
+APPLICATION_TRAIL_SSH_REMOTE_PORT=5432
+DATABASE_URL=postgresql://application_trail:<password>@127.0.0.1:55432/application_trail
+```
+
+`APPLICATION_TRAIL_SSH_IDENTITY_FILE` is optional when the normal SSH configuration already selects the correct key.
+
+Lower-level troubleshooting commands remain available:
+
+```text
+npm run migrate
+npm run start:api
+npm run start:web
+```
+
+## Extension development
+
+`npm run build` creates `apps/extension/dist`.
+
+The extension build reads `APPLICATION_TRAIL_EXTENSION_ORIGIN` from the environment. Without an override it targets the hosted dogfood origin:
+
+`https://trail.threewheeledsloth.com`
+
+When `npm run dev` builds with a local `.env.local`, set:
+
+```text
+APPLICATION_TRAIL_EXTENSION_ORIGIN=http://127.0.0.1:4320
+```
+
+Then load `apps/extension/dist` unpacked in Chrome or Edge.
+
+The explicit development identity remains available only when both the extension build and API are intentionally configured with:
 
 ```text
 APPLICATION_TRAIL_ENABLE_DEV_IDENTITY=true
 ```
 
-When using the existing studio PostgreSQL server, open the configured SSH tunnel in a separate terminal before migration or API startup. The local database connection uses `127.0.0.1:55432`.
-
-Run migrations:
-
-```text
-npm run migrate
-```
-
-Start the API and web application in separate terminals:
-
-```text
-npm run start:api
-```
-
-```text
-npm run start:web
-```
-
-In Chrome or Edge:
-
-1. Open the extensions management page.
-2. Enable Developer mode.
-3. Choose Load unpacked.
-4. Select `apps/extension/dist`.
-5. Open a job listing and activate Application Trail.
-6. Review the detected title/company/location.
-7. Choose Save job or I applied.
-8. Choose Open full record to verify persistence and the return-to-source link.
-
-The current local development URLs are API port `4310` and web port `4320`.
-
-## Optional disposable PostgreSQL
-
-Developers who prefer an isolated local database may use Docker Compose:
-
-```text
-docker compose up -d
-```
-
-This is optional for local development. CI uses an isolated PostgreSQL service so integration tests can create, migrate, and destroy data without touching persistent development data.
-
-## Next gate
-
-Before WP3 implementation, review and approve:
-
-- production/dogfood web domain strategy
-- production API hostname/origin strategy
-- Hostinger VPS deployment topology
-- Google OAuth redirect/origin requirements
-- extension sign-in handoff
-- Application Trail session model for web and extension
-- minimum cross-machine dogfood deployment
-
-See `refs/handoffs/currentHandoff.md` and `refs/handoffs/next-dev-prompt.md` for the exact review checkpoint.
+Never enable that flag in the hosted environment.
 
 ## Validation
 
-CI typechecks and builds all workspaces and runs the PostgreSQL integration test against PostgreSQL 17.
+```text
+npm run typecheck
+npm test
+```
 
-See `refs/handoffs/currentHandoff.md` for the current accepted checkpoint and `refs/README.md` for the documentation map.
+CI runs the same build/typecheck/test path against PostgreSQL 17 and validates core persistence plus WP3 identity/session/grant behavior.
 
 ## License
 

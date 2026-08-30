@@ -4,151 +4,114 @@ Date: 2026-08-30
 
 ## Current state
 
-Application Trail has progressed from architecture bootstrap through accepted WP0, WP1, and WP2 on `main`.
+Application Trail has accepted WP0, WP1, and WP2, and the repository side of WP3 is now implemented on `main`.
 
 Accepted implementation commits:
 
 - `0dd20762cd484fd6d45f5c57360017ff5f8d166b` - WP0 executable monorepo scaffold
 - `1a9a7a18ccf889d03067850ba9fe0c804bfc36b1` - WP1 PostgreSQL persistence foundation
 - `b8640d5f2a3a5cd49451c78db93ffd0713b289c4` - WP2 real browser capture slice
+- `ed7e7c33581da5ee751d087646221c199a82e3bc` - WP3 auth, hosted-web, cross-machine-list, and local-dev-orchestration foundation
 
-The project is now paused at a **WP3 design-review gate**. Do not begin Google-auth implementation until the deployment/domain/auth topology is reviewed and explicitly approved.
+CI run #13 (`33308484820`) passed typecheck and the complete test suite against PostgreSQL 17.
 
-## Validation
+The remaining WP3 work is hosted deployment/configuration and the live cross-machine smoke. Do not begin WP4 until that gate is accepted.
 
-WP0 GitHub Actions run #1 (`33265633859`) passed.
+## Accepted WP3 topology
 
-WP1 GitHub Actions run #2 (`33265952117`) passed against PostgreSQL 17, including the integration test for:
+Canonical origin:
 
-- source URL and source-text round trip
-- user ownership isolation
-- applied capture creating an application event
-- Applied -> Passed creating a status-change event
+`https://trail.threewheeledsloth.com`
 
-WP2 GitHub Actions run #3 (`33266190178`) passed, including typecheck, build/tests, and the PostgreSQL integration test.
+The user has created the `trail.threewheeledsloth.com` host/domain entry.
 
-Documentation head run #4 (`33266265265`) also passed.
+Public routing contract:
 
-Local WP2 validation passed:
+- `/` -> web application
+- `/api/*` -> Application Trail API
+- `/auth/*` -> Application Trail API
+- `/health` -> Application Trail API
 
-- `npm run typecheck`
-- `npm test`
+Web and API intentionally share one origin. PostgreSQL remains private.
 
-Manual WP2 browser smoke passed against a real job listing:
+## Implemented WP3 behavior
 
-- Chromium extension loaded successfully
-- a real listing was captured
-- the user applied to the role
-- the resulting record was successfully marked `applied`
-- persistence and status handling worked through the live Application Trail PostgreSQL environment
+### Google identity and sessions
 
-WP2 is accepted. Do not reopen it without new evidence.
+- server-mediated Google OAuth authorization-code flow
+- identity scopes only: `openid email profile`
+- Google `sub` is the durable external identity key
+- Google email/name are snapshots for display, not ownership keys
+- internal `app_user.id` UUID remains the canonical ownership key
+- Application Trail issues opaque web and extension sessions
+- only SHA-256 hashes of Application Trail session tokens are persisted
+- web sessions use HttpOnly cookies
+- extension sessions use bearer tokens stored in `chrome.storage.local`
+- Google access tokens are used only to retrieve Google userinfo and are not persisted
+- OAuth state is HMAC-signed and browser-bound with a short-lived HttpOnly nonce cookie
 
-## Implemented system
+### Extension authentication
 
-### Monorepo
+The extension uses a server-mediated pairing flow rather than a Chrome-extension-id-specific Google OAuth client flow:
 
-- `apps/extension`
-- `apps/web`
-- `apps/api`
-- `packages/domain`
+1. extension creates a short-lived Application Trail auth grant
+2. extension opens the hosted web authorization URL
+3. user signs in through the normal Google web flow
+4. server binds the grant to the Application Trail user
+5. extension exchanges its high-entropy one-time grant secret for an opaque extension session
 
-### PostgreSQL persistence
+This works for unpacked dogfood builds and later packaged builds without making the extension id part of the account architecture.
 
-Application Trail has its own database and application user on the existing studio PostgreSQL server used by World Forge/Parchment Worlds.
+### Cross-machine retrieval
 
-Current logical boundary:
+`GET /api/opportunities` and a minimal web opportunity list now exist so machine B can discover records captured on machine A without already knowing their UUIDs.
 
-- database: `application_trail`
-- application user: `application_trail`
-- PostgreSQL is not publicly exposed
-- local Windows development uses the existing SSH-tunnel pattern to local port `55432`
-- Docker is optional for disposable local/CI use and is not required for normal dogfooding
+### Database
 
-Migration `001_core.sql` has been applied successfully to the persistent Application Trail database.
+Migration `002_auth.sql` adds:
 
-The Application Trail user can CRUD its own database and has been verified not to have access to World Forge/Parchment Worlds application tables.
+- `user_identity`
+- `user_session`
+- `auth_grant`
 
-Secrets remain outside Git. Local ignored `.env.local` contains the working development database configuration.
+The existing migration runner automatically discovers and applies it after `001_core.sql`.
 
-### API
+### Local development cleanup
 
-Current development routes:
+`npm run dev` is now the normal local startup path.
 
-- `GET /health`
-- `POST /api/opportunities/capture`
-- `GET /api/opportunities/:id`
-- `POST /api/opportunities/:id/application-status`
+With SSH tunnel variables in ignored `.env.local`, it:
 
-The current temporary identity is explicitly gated by `APPLICATION_TRAIL_ENABLE_DEV_IDENTITY=true` and uses `x-application-trail-user-id`. This exists only to support the accepted local WP2 slice and is not the intended production identity design.
+- builds
+- starts the database tunnel
+- waits for PostgreSQL
+- runs migrations
+- starts API and web
+- shuts the complete stack down together
 
-### Extension
+The local web server also proxies `/api`, `/auth`, and `/health` to the local API, preserving the same-origin topology used in production.
 
-The Manifest V3 Chromium extension can:
+## Hosted deployment still required
 
-- read the active page
-- extract generic URL/title/source text
-- use schema.org `JobPosting` JSON-LD when available
-- preview detected title/company/location
-- save as Saved or Applied
-- call the Application Trail API
-- open the persisted record in the local web application
+Follow `refs/deployment/wp3-hosted-deployment.md`.
 
-No source-specific ATS scraper has been added.
+The exact Google production callback is:
 
-### Web
+`https://trail.threewheeledsloth.com/auth/google/callback`
 
-The current web shell can load one captured Opportunity by ID and display:
+Production must set:
 
-- title
-- normalized company
-- status
-- captured location when available
-- original posting link
-- preserved source text
+- `APPLICATION_TRAIL_PUBLIC_URL=https://trail.threewheeledsloth.com`
+- `APPLICATION_TRAIL_EXTENSION_ORIGIN=https://trail.threewheeledsloth.com`
+- `APPLICATION_TRAIL_ENABLE_DEV_IDENTITY=false`
+- private `DATABASE_URL`
+- Google Web application client id/secret
+- a long random `APPLICATION_TRAIL_AUTH_SECRET`
 
-## Product and architecture constraints still in force
+Do not commit any of those secrets.
 
-- Opportunity remains distinct from Listing Observation/Snapshot.
-- Original source URL and source text are preserved separately from derived fields.
-- Browser storage is not canonical.
-- Suspected duplicates/reposts must never silently merge.
-- AI/Ollama is deferred until the extraction/enrichment slice needs it.
-- Do not add the local AI bridge before a real need appears.
-- Keep all secrets and real user data out of Git.
+## Next gate
 
-## WP3 review status
+Deploy the accepted WP3 commit to the existing studio VPS using the VPS's established reverse-proxy and process-manager patterns, apply `002_auth.sql`, enable HTTPS, configure the exact Google redirect URI, and perform the live cross-machine smoke.
 
-Google OAuth remains the intended identity provider, but the specific WP3 implementation proposal has **not yet been approved**.
-
-A preliminary proposal considered:
-
-- keeping internal Application Trail UUIDs as canonical ownership keys
-- mapping Google identity through Google's stable `sub`, not email
-- using a server-mediated OAuth/session boundary
-- letting web and extension resolve to the same Application Trail account
-- preserving the explicit development identity only for local troubleshooting
-
-Treat those as design candidates, not accepted implementation instructions.
-
-Before implementation, review these unresolved deployment/auth questions:
-
-1. **Production web domain is not yet selected or configured.**
-2. **Production API URL/host is not yet selected.**
-3. Decide whether web and API will share one origin/domain or use separate hostnames/subdomains.
-4. Decide how the Chromium extension will enter and complete the Google sign-in flow.
-5. Confirm whether the existing studio Google OAuth client/project can support the chosen redirect URIs/origins or whether any additional client configuration is actually necessary.
-6. Decide the Application Trail session transport for web and extension after OAuth.
-7. Determine the minimum VPS deployment needed for the first cross-machine dogfood gate.
-
-Do not make external Google Cloud changes or lock in redirect URIs until the domain/deployment topology is settled.
-
-## Next work
-
-The next conversation should begin with a **WP3 design review**, not implementation.
-
-Review the hosted topology, domain strategy, Google OAuth flow, extension-to-web handoff, and session model. Resolve only what is needed for the first cross-machine dogfood gate.
-
-After that review is explicitly accepted, update `refs/handoffs/next-dev-prompt.md` with the implementation instructions and then hand off to the coding agent.
-
-Do not start AI enrichment, duplicate/repost work, resume analysis, contacts, email ingestion, or advanced analytics during this review.
+Do not begin AI enrichment, duplicate/repost work, resume analysis, contacts, email ingestion, or advanced analytics until WP3 is accepted.

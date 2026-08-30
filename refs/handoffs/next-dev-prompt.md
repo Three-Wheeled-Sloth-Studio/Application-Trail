@@ -4,130 +4,138 @@ Continue in:
 
 `https://github.com/Three-Wheeled-Sloth-Studio/Application-Trail`
 
-Work from the current `main` branch.
+Work from current `main`.
 
-## Important: design review only
+## Objective
 
-Do **not** begin WP3 implementation yet.
+Finish the WP3 hosted deployment and cross-machine dogfood gate. The application code is already implemented and CI-green. This is primarily an infrastructure/configuration slice.
 
-The previous WP3 implementation prompt was intentionally paused for review because the hosted deployment/domain topology has not been selected. In particular, Application Trail does not yet have a production web domain or production API URL.
+Accepted WP3 implementation commit:
 
-The next conversation should perform a focused WP3 design review and return a recommended implementation plan for approval.
+`ed7e7c33581da5ee751d087646221c199a82e3bc`
 
-## Read these first
+CI run #13:
+
+`33308484820` - green against PostgreSQL 17.
+
+Read first:
 
 1. `AGENTS.md`
-2. `refs/project.yaml`
-3. `refs/product/product-requirements.md`
-4. `refs/architecture/system-architecture.md`
-5. `refs/architecture/domain-model.md`
-6. `refs/architecture/security-and-secrets.md`
-7. `refs/planning/mvp-roadmap.md`
-8. `refs/handoffs/currentHandoff.md`
+2. `refs/handoffs/currentHandoff.md`
+3. `refs/deployment/wp3-hosted-deployment.md`
+4. `refs/architecture/security-and-secrets.md`
+5. `.env.example`
 
-## Accepted implementation baseline
+## Critical deployment constraint
 
-- WP0: `0dd20762cd484fd6d45f5c57360017ff5f8d166b`
-- WP1: `1a9a7a18ccf889d03067850ba9fe0c804bfc36b1`
-- WP2: `b8640d5f2a3a5cd49451c78db93ffd0713b289c4`
+Before changing the VPS, inspect the existing studio VPS conventions for:
 
-WP0, WP1, and WP2 automated validation are green.
+- reverse proxy / web server
+- TLS certificate management
+- process manager / startup services
+- deployed application directories
+- PostgreSQL connectivity
+- existing studio application isolation
 
-WP2 also passed a real manual browser smoke. A live job listing was captured through the Chromium extension and successfully persisted/marked `applied` in the persistent Application Trail PostgreSQL database.
+Reuse those conventions. Do not introduce a second proxy, a second process-manager convention, Docker, or a new database host merely for Application Trail unless existing infrastructure makes that necessary and you document why.
 
-Treat WP2 as accepted unless new evidence exposes a defect.
+Do not disrupt World Forge, Parchment Worlds, or any other hosted studio application.
 
-## Current infrastructure
+## Accepted public topology
 
-Application Trail already has:
+Canonical origin:
 
-- its own `application_trail` PostgreSQL database
-- its own `application_trail` database user
-- database hosting on the existing studio PostgreSQL server used by World Forge/Parchment Worlds
-- local Windows development through the existing SSH-tunnel pattern
-- working local API at `http://127.0.0.1:4310`
-- working local web app at `http://127.0.0.1:4320`
-- a working Chromium Manifest V3 extension
+`https://trail.threewheeledsloth.com`
 
-Docker is optional for disposable local/CI PostgreSQL and is not required for normal dogfooding.
+Routes:
 
-## Current identity state
+- `/` and static assets -> `apps/web/dist`
+- `/api/*` -> API at loopback `127.0.0.1:4310`
+- `/auth/*` -> API at loopback `127.0.0.1:4310`
+- `/health` -> API at loopback `127.0.0.1:4310`
 
-Normal WP2 development currently uses the explicitly gated temporary identity:
+PostgreSQL must remain non-public.
 
-`APPLICATION_TRAIL_ENABLE_DEV_IDENTITY=true`
+## Required work
 
-This is not a production auth design.
+1. Confirm `trail.threewheeledsloth.com` resolves to the intended VPS.
+2. Pull/deploy the accepted commit.
+3. Install dependencies and run `npm run build`.
+4. Configure production secrets/environment outside Git.
+5. Run `npm run migrate` against the existing private `application_trail` database and verify `002_auth.sql` applies cleanly without altering existing WP2 records.
+6. Run the API through the VPS's existing process manager with `APPLICATION_TRAIL_API_PORT=4310` and loopback binding.
+7. Serve `apps/web/dist` at `/` through the existing reverse proxy.
+8. Proxy `/api/*`, `/auth/*`, and `/health` to the API.
+9. Enable a valid HTTPS certificate and redirect HTTP to HTTPS.
+10. Verify `https://trail.threewheeledsloth.com/health` returns the API health response.
+11. Configure or report the exact required Google OAuth settings. If you do not have Google Cloud access, do not invent credentials; stop at the point where the site is HTTPS-live and report the manual Google action required.
+12. Once Google OAuth credentials are available, restart the API and test Google sign-in.
+13. Perform the cross-machine and extension validation gate below if browser access is available.
 
-Google OAuth remains the intended identity provider, but no WP3 auth architecture should be treated as approved yet.
+## Required production environment
 
-## Design questions to resolve
+```text
+APPLICATION_TRAIL_API_PORT=4310
+APPLICATION_TRAIL_PUBLIC_URL=https://trail.threewheeledsloth.com
+APPLICATION_TRAIL_EXTENSION_ORIGIN=https://trail.threewheeledsloth.com
+APPLICATION_TRAIL_ENABLE_DEV_IDENTITY=false
+DATABASE_URL=<existing private application_trail database connection>
+GOOGLE_OAUTH_CLIENT_ID=<Google Web application client id>
+GOOGLE_OAUTH_CLIENT_SECRET=<Google Web application client secret>
+APPLICATION_TRAIL_AUTH_SECRET=<new long random production secret>
+```
 
-Review and recommend the smallest coherent deployment/auth topology needed to reach the cross-machine dogfood gate.
+Never commit these real values.
 
-At minimum address:
+## Google OAuth manual configuration
 
-1. **Domain strategy**
-   - Application Trail currently has no production domain configured.
-   - Recommend whether to use a new dedicated domain, a subdomain under an existing studio domain, or another simple first-dogfood arrangement.
-   - Do not register or modify DNS during the review unless explicitly asked.
+Exact authorized redirect URI:
 
-2. **Web/API hosting topology**
-   - Decide whether the web app and API should share an origin or use separate hostnames/subdomains.
-   - Account for the existing Hostinger VPS and PostgreSQL environment.
-   - Prefer the smallest deployment that supports secure cross-machine use.
+`https://trail.threewheeledsloth.com/auth/google/callback`
 
-3. **Google OAuth topology**
-   - The studio already has Google OAuth configuration used by other applications.
-   - Determine how much can be reused.
-   - Do not assume redirect URIs or OAuth client types before the domain/hosting topology is chosen.
-   - Preserve the likely principle that Google `sub`, not email, should be the durable external identity key.
+Scopes are only:
 
-4. **Extension sign-in path**
-   - Recommend how the Chromium extension should authenticate without embedding privileged Google credentials.
-   - Compare a server-mediated browser/web sign-in handoff with any Chrome-specific OAuth mechanism only as needed.
+- `openid`
+- `email`
+- `profile`
 
-5. **Application Trail session model**
-   - Recommend how the web app and extension should hold/use Application Trail session credentials after Google authentication.
-   - Keep the design MVP-sized and testable.
+Use the existing studio Google OAuth project/client if it is a compatible Web application client. Do not create a second Google project merely because Application Trail is a new app.
 
-6. **Cross-machine gate**
-   - Define the minimum deployment needed so machine A and machine B using the same Google account resolve to the same Application Trail user/data.
-   - Identify whether a minimal opportunity list is needed for practical second-machine retrieval.
+## Validation gate
 
-7. **Security boundary**
-   - Keep Google client secrets, DB credentials, signing secrets, and user data out of extension assets and Git.
-   - Preserve the existing internal Application Trail `user_id` ownership boundary.
+Automated:
 
-## Expected output of the review
+- `npm run typecheck`
+- `npm test`
 
-Return:
+Hosted:
 
-1. recommended production/dogfood topology
-2. domain/hostname recommendation
-3. Google OAuth flow recommendation
-4. extension authentication flow
-5. Application Trail session model
-6. schema changes required for external identity/session support
-7. required deployment/configuration changes
-8. exact external/manual actions required, if any
-9. risks/tradeoffs and any decisions that should remain deferred
-10. proposed WP3 execution sequence and validation gate
+- HTTPS web shell loads
+- `/health` is green
+- HTTP redirects to HTTPS
+- PostgreSQL is not publicly exposed
+- dev identity is disabled
+- Google sign-in succeeds
+- same Google account maps to the same internal user on repeat sign-in
+- a different Google account cannot read the first account's opportunity
 
-Do not implement the recommendation until it is explicitly approved.
+Cross-machine:
 
-## Scope discipline
+1. machine A signs in
+2. machine A extension captures a real job
+3. machine B signs in with the same Google account
+4. machine B opportunity list shows that captured job
+5. machine B opens the full stored record
 
-Do not begin:
+Extension:
 
-- AI enrichment
-- Ollama/local bridge
-- duplicate/repost implementation
-- resume analysis
-- contacts
-- email ingestion
-- listing monitoring
-- billing/tenancy
-- advanced analytics
+- Sign in with Google starts the hosted web flow
+- pairing completes
+- extension can save a job with its opaque Application Trail session
+- no privileged credential exists in the extension build
 
-The sole objective is to make WP3 implementation safe and unambiguous before handing it to the coding agent.
+## Stop condition
+
+WP3 is complete only when the hosted cross-machine dogfood gate passes.
+
+Do not begin WP4 extraction/enrichment or later roadmap work during this slice.
