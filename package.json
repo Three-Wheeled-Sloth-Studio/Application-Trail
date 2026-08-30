@@ -12,6 +12,7 @@
     "typecheck": "npm run build -w @application-trail/domain && npm run typecheck --workspaces --if-present",
     "test": "npm run build && node --test tests/*.test.mjs",
     "validate": "npm run typecheck && npm test",
+    "dev": "node --env-file=.env.local scripts/dev.mjs",
     "migrate": "node --env-file=.env.local apps/api/scripts/migrate.mjs",
     "start:api": "node --env-file=.env.local apps/api/dist/server.js",
     "start:web": "node --env-file=.env.local apps/web/scripts/serve.mjs"

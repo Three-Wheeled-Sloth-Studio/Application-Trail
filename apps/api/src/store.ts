@@ -9,12 +9,14 @@ import type {
   ListingSnapshot,
   Opportunity,
   OpportunityRecord,
+  OpportunitySummary,
   UserId
 } from '@application-trail/domain';
 import type { Pool, PoolClient } from 'pg';
 
 export interface ApplicationTrailStore {
   captureOpportunity(userId: UserId, input: CaptureListingInput): Promise<OpportunityRecord>;
+  listOpportunities(userId: UserId, limit?: number): Promise<readonly OpportunitySummary[]>;
   getOpportunity(userId: UserId, opportunityId: string): Promise<OpportunityRecord | null>;
   setApplicationStatus(userId: UserId, opportunityId: string, status: ApplicationStatus): Promise<OpportunityRecord>;
 }
@@ -132,6 +134,38 @@ export class PgApplicationTrailStore implements ApplicationTrailStore {
     } finally {
       client.release();
     }
+  }
+
+  async listOpportunities(userId: UserId, limit = 100): Promise<readonly OpportunitySummary[]> {
+    const result = await this.pool.query(
+      `SELECT o.id, o.normalized_title, o.current_status, o.first_seen_at, o.last_seen_at, o.updated_at,
+              c.canonical_name,
+              latest.source_url, latest.observed_location_text
+       FROM opportunity o
+       LEFT JOIN company c ON c.id = o.company_id
+       LEFT JOIN LATERAL (
+         SELECT lo.source_url, lo.observed_location_text
+         FROM listing_observation lo
+         WHERE lo.user_id = o.user_id AND lo.opportunity_id = o.id
+         ORDER BY lo.observed_at DESC
+         LIMIT 1
+       ) latest ON true
+       WHERE o.user_id = $1
+       ORDER BY o.updated_at DESC
+       LIMIT $2`,
+      [userId, Math.max(1, Math.min(limit, 500))]
+    );
+    return result.rows.map(row => ({
+      id: row.id,
+      normalizedTitle: row.normalized_title,
+      ...(row.canonical_name ? { companyName: row.canonical_name } : {}),
+      currentStatus: row.current_status,
+      ...(row.source_url ? { latestSourceUrl: row.source_url } : {}),
+      ...(row.observed_location_text ? { latestLocationText: row.observed_location_text } : {}),
+      firstSeenAt: iso(row.first_seen_at),
+      lastSeenAt: iso(row.last_seen_at),
+      updatedAt: iso(row.updated_at)
+    }));
   }
 
   async getOpportunity(userId: UserId, opportunityId: string): Promise<OpportunityRecord | null> {

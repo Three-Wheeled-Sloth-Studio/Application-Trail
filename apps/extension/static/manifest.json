@@ -1,10 +1,13 @@
 {
   "manifest_version": 3,
   "name": "Application Trail",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Capture job opportunities and applications into Application Trail.",
   "permissions": ["activeTab", "scripting", "storage", "tabs"],
   "host_permissions": [
+    "https://trail.threewheeledsloth.com/*",
+    "http://127.0.0.1:4320/*",
+    "http://localhost:4320/*",
     "http://127.0.0.1:4310/*",
     "http://localhost:4310/*"
   ],

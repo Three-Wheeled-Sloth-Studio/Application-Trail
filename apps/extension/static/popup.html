@@ -19,6 +19,8 @@
   <body>
     <main>
       <h1>Application Trail</h1>
+      <button id="sign-in" type="button" hidden>Sign in with Google</button>
+      <p id="account-status" class="note">Checking sign-in...</p>
       <dl>
         <dt>Page</dt><dd id="page-title">Reading active page...</dd>
         <dt>URL</dt><dd id="page-url"></dd>
@@ -30,7 +32,6 @@
       <button id="applied" type="button" disabled>I applied</button>
       <button id="open-record" type="button" hidden>Open full record</button>
       <p id="capture-status" class="note" aria-live="polite">Preparing capture...</p>
-      <p class="note">WP2 uses a local development identity until Google sign-in lands in WP3.</p>
     </main>
     <script type="module" src="popup.js"></script>
   </body>

@@ -8,14 +8,34 @@
   </head>
   <body>
     <main class="shell">
-      <p class="eyebrow">Three-Wheeled Sloth Studio</p>
-      <h1>Application Trail</h1>
-      <p>Capture where you apply. Learn from the trail.</p>
+      <header class="masthead">
+        <div>
+          <p class="eyebrow">Three-Wheeled Sloth Studio</p>
+          <h1>Application Trail</h1>
+          <p>Capture where you apply. Learn from the trail.</p>
+        </div>
+        <div class="account">
+          <span id="account-name"></span>
+          <a id="sign-in" class="button" href="/auth/google/start">Sign in with Google</a>
+          <button id="sign-out" type="button" hidden>Sign out</button>
+        </div>
+      </header>
+
       <section class="status" aria-live="polite">
-        <strong>WP2</strong>
-        <span id="status">Web shell ready.</span>
+        <strong>WP3</strong>
+        <span id="status">Checking your Application Trail session...</span>
       </section>
-      <article id="record" class="record" hidden>
+
+      <section id="opportunities-section" class="panel" hidden>
+        <div class="section-heading">
+          <h2>Opportunities</h2>
+          <span id="opportunity-count"></span>
+        </div>
+        <div id="opportunity-list" class="opportunity-list"></div>
+      </section>
+
+      <article id="record" class="record panel" hidden>
+        <p><a href="/">Back to opportunities</a></p>
         <h2 id="record-title"></h2>
         <p><strong id="record-company"></strong></p>
         <dl>

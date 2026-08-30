@@ -45,6 +45,18 @@ export interface Opportunity {
   updatedAt: string;
 }
 
+export interface OpportunitySummary {
+  id: OpportunityId;
+  normalizedTitle: string;
+  companyName?: string;
+  currentStatus: OpportunityStatus;
+  latestSourceUrl?: string;
+  latestLocationText?: string;
+  firstSeenAt: string;
+  lastSeenAt: string;
+  updatedAt: string;
+}
+
 export type ListingState = 'open' | 'closed' | 'unknown';
 
 export interface ListingObservation {
