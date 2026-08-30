@@ -4,7 +4,7 @@ Date: 2026-08-29
 
 ## Current state
 
-Application Trail has progressed from architecture bootstrap through WP0, WP1, and the first WP2 browser capture slice on `main`.
+Application Trail has progressed from architecture bootstrap through WP0, WP1, and WP2 on `main`.
 
 Current implementation commit:
 
@@ -35,7 +35,15 @@ Local WP2 validation passed:
 - `npm run typecheck`
 - `npm test`
 
-The local Postgres integration test skips when `DATABASE_URL` is unavailable; CI executes it against a real Postgres service.
+Manual WP2 browser smoke passed on 2026-08-29 against a real job listing:
+
+- Chromium extension loaded successfully
+- a real listing was captured
+- the user applied to the role
+- the listing/application was successfully marked `applied`
+- persistence and status handling worked through the live Application Trail PostgreSQL environment
+
+This clears the manual browser gate for WP3.
 
 ## Implemented system
 
@@ -126,29 +134,12 @@ The current web shell can load one captured Opportunity by ID and display:
 - Do not add the local bridge before a real need appears.
 - Keep all secrets and real user data out of Git.
 
-## Manual browser smoke gate
-
-Before WP3, run the current slice against several real job listings in Chrome or Edge.
-
-Standard local setup now uses the persistent shared PostgreSQL environment rather than requiring Docker:
-
-1. `npm install`
-2. `npm run build`
-3. Confirm ignored `.env.local` contains the provisioned `DATABASE_URL` and `APPLICATION_TRAIL_ENABLE_DEV_IDENTITY=true`.
-4. Open the configured SSH tunnel to the studio PostgreSQL host, forwarding local port `55432` to server loopback PostgreSQL port `5432`.
-5. `npm run migrate`
-6. In one terminal: `npm run start:api`
-7. In another terminal: `npm run start:web`
-8. In Chrome/Edge extension developer mode, load unpacked `apps/extension/dist`.
-9. Open a real job listing and activate Application Trail.
-10. Confirm detected title/company/location are reasonable.
-11. Save the role or mark it Applied.
-12. Open the full record and verify the original URL and source text are present.
-
-Useful smoke targets should include at least one page with schema.org JobPosting metadata and one page where generic fallback is required.
-
 ## Next work
 
-After the browser smoke passes, proceed to WP3 Google authentication and the first cross-machine dogfood gate.
+Proceed to WP3 Google authentication and the first cross-machine dogfood gate.
 
-If the smoke exposes page-capture failures, fix only the generic extraction boundary first. Add a site-specific adapter only when repeated evidence shows one is justified.
+Preserve the current `user_id` ownership boundary while replacing the generated development UUID in normal operation with Google-authenticated identity.
+
+Use Google's immutable account subject (`sub`) as the external identity key, not email. Prefer a server-mediated OAuth/session boundary so Google client secrets remain server-side and the extension receives only Application Trail session credentials. The temporary dev identity may remain behind its explicit environment flag for local troubleshooting.
+
+Do not start AI enrichment, duplicate/repost work, resume analysis, or the local bridge during WP3.
