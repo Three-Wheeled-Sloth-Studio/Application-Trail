@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import YAML from 'yaml';
 import { expectedIndexes, loadFrontmatter } from './generate-okf-indexes.mjs';
 
-const ROOT = fileURLToPath(new URL('../../../', import.meta.url));
+const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 const REFS = path.join(ROOT, 'refs');
 const RESERVED_MARKDOWN = new Set(['index.md', 'log.md']);
 const OKF_STATUSES = new Set(['draft', 'stable', 'deprecated']);
@@ -112,7 +112,7 @@ try {
 }
 
 const assignmentPattern = /(?:api_key|access_token|secret_key|password|private_key|bearer)[^\n]*[:=]\s*['"]?[A-Za-z0-9_+/=-]{16,}/i;
-for (const file of files.filter(value => !rel(value).startsWith('refs/index.md'))) {
+for (const file of files.filter(value => rel(value) !== 'refs/index.md')) {
   const contents = await readFile(file, 'utf8');
   if (assignmentPattern.test(contents)) addError(file, 'possible secret-like value detected');
 }

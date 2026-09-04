@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import YAML from 'yaml';
 
-const ROOT = fileURLToPath(new URL('../../../', import.meta.url));
+const ROOT = fileURLToPath(new URL('../../', import.meta.url));
 const REFS = path.join(ROOT, 'refs');
 const PROFILE = path.join(REFS, 'okfProfile.yaml');
 const RESERVED_MARKDOWN = new Set(['index.md', 'log.md']);
