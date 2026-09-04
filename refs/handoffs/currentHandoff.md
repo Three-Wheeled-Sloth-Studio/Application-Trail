@@ -30,6 +30,11 @@ As of 2026-09-04, Application Trail is aligned additively with Agent Academy com
 
 Application Trail is treated as a mature custom refs repository rather than replacing its useful taxonomy with the blank framework template.
 
+Alignment commits:
+
+- `3e837f193c03b78451cc47a957e7cea04e90596f` - Agent Academy operating model, OKF discovery, refs validation, structured project memory, and tracked-path case guard
+- `115dd51179f47fbb4c94a77d92d8c15e9175dae7` - portable repository-root correction for the Node-based refs tools
+
 The repository now has:
 
 - `refs/agents.yaml` as the authoritative project-memory operating rules
@@ -41,6 +46,15 @@ The repository now has:
 - `refs/testing/validationCommands.yaml`
 - Node-based equivalent OKF generation and refs validation in the existing Node 22 toolchain
 - a Git-index case-collision guard wired into build/typecheck/CI
+
+CI run #16 (`33882952789`) is the accepted Agent Academy alignment validation gate. It passed:
+
+- tracked-path case-collision validation
+- Agent Academy / OKF refs validation and generated-index freshness
+- TypeScript typecheck
+- complete build and test suite against PostgreSQL 17
+
+The preceding run #15 intentionally exposed and failed on an incorrect repository-root assumption in the new refs tooling; `115dd51179f47fbb4c94a77d92d8c15e9175dae7` corrected it before acceptance.
 
 Normal full validation is `npm run validate`. Do not hand-edit generated refs indexes.
 
