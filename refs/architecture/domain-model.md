@@ -1,3 +1,10 @@
+---
+type: Domain Model
+title: Application Trail Domain Model
+description: Canonical entities, ownership boundaries, listing evidence, applications, resumes, and duplicate or repost semantics.
+status: stable
+tags: [application-trail, domain-model, persistence]
+---
 # Domain Model
 
 ## Core distinction: Opportunity vs Listing

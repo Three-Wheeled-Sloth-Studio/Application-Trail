@@ -1,0 +1,56 @@
+version: 1
+updated: 2026-09-04
+okf:
+  version: "0.2"
+  canonical_repository: https://github.com/GoogleCloudPlatform/open-knowledge-format
+  baseline_commit: ad30107c31c06aec8a7d5636e0d1058118604e6f
+bundle:
+  root: refs
+  title: Application Trail Knowledge Bundle
+  reserved_files:
+    - index.md
+    - log.md
+agent_academy:
+  profile: application-trail-agent-academy-v1
+  source_repository: https://github.com/Three-Wheeled-Sloth-Studio/Agent-Academy
+  baseline_commit: 16691651776151a7eb1ebf13d99a92658e0684e6
+  migration_mode: mature-custom-refs
+  authority:
+    operating_instructions: refs/agents.yaml
+    deterministic_state:
+      - refs/project.yaml
+      - refs/planning
+      - refs/architecture
+      - refs/product
+      - refs/deployment
+      - refs/implementation
+      - refs/testing
+      - refs/handoffs
+    okf_concepts: Markdown files under refs except reserved index.md and log.md files.
+  compatibility:
+    preserve_yaml_state: true
+    preserve_existing_taxonomy: true
+    unknown_okf_fields_tolerated: true
+    richer_project_relationships_remain_authoritative: true
+indexes:
+  generated: true
+  committed: true
+  generator: node refs/tools/generate-okf-indexes.mjs
+  check: node refs/tools/generate-okf-indexes.mjs --check
+  manual_edits_allowed: false
+provenance:
+  rules:
+    - Do not infer verified status from generation, Git history, tests, or refs validation.
+    - Add generated only when the producer identity and meaningful content-change time are known.
+    - Add verified only after an actor actually confirms the concept against its source or resource.
+    - Add sources only for materials the concept genuinely derives from.
+    - Use stale_after only for knowledge with a meaningful expiration instant.
+relationships:
+  okf_surface: Standard Markdown links between concepts.
+  application_trail_surface: Preserve richer project-specific structured state where already modeled.
+studio_catalog:
+  role: Derived discovery and navigation layer, never a source of project truth.
+  source_authority: Originating project repository and commit.
+  preserve_upstream_trust: true
+project_specific_exceptions:
+  - Agent Academy reference generation and validation are implemented in Node.js here to stay inside Application Trail's existing toolchain; conformance semantics remain equivalent.

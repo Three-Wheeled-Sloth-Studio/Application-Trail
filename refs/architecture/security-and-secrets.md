@@ -1,3 +1,10 @@
+---
+type: Security Policy
+title: Application Trail Security and Secrets
+description: Public-repository security boundaries for credentials, extension assets, hosted sessions, provider keys, user data, and logging.
+status: stable
+tags: [application-trail, security, secrets, privacy]
+---
 # Security and Secrets
 
 Application Trail is designed for a public code repository. Public visibility is an architectural constraint, not a reason to hide implementation details.

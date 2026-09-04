@@ -1,0 +1,25 @@
+version: 1
+updated: 2026-09-04
+agent_academy:
+  repository: Three-Wheeled-Sloth-Studio/Agent-Academy
+  baseline_commit: 16691651776151a7eb1ebf13d99a92658e0684e6
+  profile: application-trail-agent-academy-v1
+instructions:
+  - Read AGENTS.md and refs/project.yaml before starting project work.
+  - Read refs/planning/mvp-roadmap.md, refs/planning/todos.yaml, and refs/handoffs/currentHandoff.md before adding or changing implementation work.
+  - Read the relevant refs/architecture documents before changing system boundaries, identity, persistence, or module ownership.
+  - Read refs/implementation/fileMap.yaml before searching broadly.
+  - Read refs/testing/validationCommands.yaml before finalizing changes.
+  - Use refs/index.md as the OKF discovery surface, but do not substitute it for this required reading order.
+  - Keep durable decisions, open questions, todos, handoffs, and validation-relevant knowledge in refs.
+  - Preserve OKF frontmatter on every non-reserved Markdown concept under refs.
+  - Do not hand-edit generated index.md files; regenerate them with npm run generate:refs.
+  - Never infer OKF verified status from generation, passing tests, Git history, or refs validation.
+  - Do not store secrets, credentials, captured job data, resumes, or contact data in refs.
+  - If a project fact is unknown, record it in refs/planning/openQuestions.yaml instead of guessing.
+  - Record durable implementation decisions in refs/planning/decisions.yaml with rationale and consequences.
+  - Update refs/handoffs/currentHandoff.md when stopping with incomplete or context-heavy work.
+  - Preserve the established Application Trail refs taxonomy unless a documented migration has a concrete benefit.
+  - Never create, rename, or retain two tracked paths that differ only by letter casing.
+  - Treat git ls-files as the authority for case-collision checks and keep npm run check:case-collisions in the normal validation path.
+  - Match import and reference casing exactly to the tracked path and use a temporary intermediate filename for case-only renames.

@@ -1,0 +1,21 @@
+version: 1
+updated: 2026-09-04
+commands:
+  - id: check-case-collisions
+    command: npm run check:case-collisions
+    purpose: Fail if distinct tracked Git paths collapse to the same case-folded path on Windows or default macOS filesystems.
+  - id: generate-okf-indexes
+    command: npm run generate:refs
+    purpose: Regenerate committed OKF discovery indexes after refs files or concept metadata change.
+  - id: check-okf-and-refs
+    command: npm run validate:refs
+    purpose: Validate Application Trail refs structure, OKF frontmatter/profile conformance, secret/path hygiene, and committed indexes.
+  - id: typecheck
+    command: npm run typecheck
+    purpose: Build the shared domain and typecheck all workspaces.
+  - id: test
+    command: npm test
+    purpose: Build all workspaces and run the Node and PostgreSQL integration tests.
+  - id: full-validation
+    command: npm run validate
+    purpose: Run refs validation, tracked-path safety, typechecking, builds, and tests before completing a normal implementation slice.

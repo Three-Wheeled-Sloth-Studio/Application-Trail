@@ -1,3 +1,10 @@
+---
+type: Product Requirements
+title: Application Trail Product Requirements
+description: Product scope, capture workflows, data provenance, duplicate and repost behavior, resume behavior, AI boundaries, and MVP requirements.
+status: stable
+tags: [application-trail, product, requirements, mvp]
+---
 # Product Requirements
 
 ## Product summary

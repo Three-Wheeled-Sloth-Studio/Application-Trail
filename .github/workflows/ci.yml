@@ -34,6 +34,10 @@ jobs:
           node-version: 22
       - name: Install dependencies
         run: npm install
+      - name: Check tracked-path casing
+        run: npm run check:case-collisions
+      - name: Validate refs and OKF indexes
+        run: npm run validate:refs
       - name: Typecheck
         run: npm run typecheck
       - name: Test

@@ -1,3 +1,10 @@
+---
+type: Roadmap
+title: Application Trail MVP Roadmap
+description: Thin-slice implementation sequence from executable scaffold through cross-machine auth, extraction, duplicate detection, AI, and resume intelligence.
+status: stable
+tags: [application-trail, roadmap, mvp]
+---
 # MVP Roadmap
 
 The goal is to reach dogfoodable capture quickly. Work in thin end-to-end slices and resist building every future package before it is needed.

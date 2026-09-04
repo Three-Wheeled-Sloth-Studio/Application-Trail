@@ -1,0 +1,13 @@
+version: 1
+updated: 2026-09-04
+open_questions:
+  - id: wp3-vps-runtime-convention
+    status: open
+    question: Which existing reverse-proxy, TLS, process-manager, and deployment-directory conventions on the studio VPS should Application Trail reuse?
+    refs:
+      - refs/deployment/wp3-hosted-deployment.md
+  - id: wp3-google-client-reuse
+    status: open
+    question: Does the existing studio Google Web OAuth client support the exact Application Trail hosted redirect URI without requiring a new client configuration?
+    refs:
+      - refs/deployment/wp3-hosted-deployment.md

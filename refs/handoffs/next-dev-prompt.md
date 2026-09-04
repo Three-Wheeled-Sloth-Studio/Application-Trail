@@ -1,3 +1,10 @@
+---
+type: Development Handoff
+title: Application Trail Next Development Prompt
+description: Infrastructure-focused instructions for completing WP3 hosted deployment and the cross-machine dogfood gate.
+status: stable
+tags: [application-trail, handoff, deployment, wp3]
+---
 # Next Development Prompt
 
 Continue in:
@@ -14,17 +21,25 @@ Accepted WP3 implementation commit:
 
 `ed7e7c33581da5ee751d087646221c199a82e3bc`
 
-CI run #13:
+Agent Academy baseline:
 
-`33308484820` - green against PostgreSQL 17.
+`16691651776151a7eb1ebf13d99a92658e0684e6`
 
 Read first:
 
 1. `AGENTS.md`
-2. `refs/handoffs/currentHandoff.md`
-3. `refs/deployment/wp3-hosted-deployment.md`
-4. `refs/architecture/security-and-secrets.md`
-5. `.env.example`
+2. `refs/agents.yaml`
+3. `refs/project.yaml`
+4. `refs/planning/mvp-roadmap.md`
+5. `refs/planning/todos.yaml`
+6. `refs/handoffs/currentHandoff.md`
+7. `refs/implementation/fileMap.yaml`
+8. `refs/deployment/wp3-hosted-deployment.md`
+9. `refs/architecture/security-and-secrets.md`
+10. `refs/testing/validationCommands.yaml`
+11. `.env.example`
+
+Use `refs/index.md` for discovery after the required reading order. Do not hand-edit generated indexes.
 
 ## Critical deployment constraint
 
@@ -40,6 +55,8 @@ Before changing the VPS, inspect the existing studio VPS conventions for:
 Reuse those conventions. Do not introduce a second proxy, a second process-manager convention, Docker, or a new database host merely for Application Trail unless existing infrastructure makes that necessary and you document why.
 
 Do not disrupt World Forge, Parchment Worlds, or any other hosted studio application.
+
+Record any previously unknown durable VPS convention in `refs/planning/decisions.yaml` or `refs/planning/openQuestions.yaml` as appropriate.
 
 ## Accepted public topology
 
@@ -59,8 +76,8 @@ PostgreSQL must remain non-public.
 ## Required work
 
 1. Confirm `trail.threewheeledsloth.com` resolves to the intended VPS.
-2. Pull/deploy the accepted commit.
-3. Install dependencies and run `npm run build`.
+2. Pull/deploy the accepted current `main`.
+3. Install dependencies and run `npm run validate` before deployment changes.
 4. Configure production secrets/environment outside Git.
 5. Run `npm run migrate` against the existing private `application_trail` database and verify `002_auth.sql` applies cleanly without altering existing WP2 records.
 6. Run the API through the VPS's existing process manager with `APPLICATION_TRAIL_API_PORT=4310` and loopback binding.
@@ -105,8 +122,7 @@ Use the existing studio Google OAuth project/client if it is a compatible Web ap
 
 Automated:
 
-- `npm run typecheck`
-- `npm test`
+- `npm run validate`
 
 Hosted:
 

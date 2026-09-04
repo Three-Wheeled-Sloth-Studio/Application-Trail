@@ -8,10 +8,15 @@
     "packages/*"
   ],
   "scripts": {
+    "check:case-collisions": "node scripts/check-case-collisions.mjs",
+    "generate:refs": "node refs/tools/generate-okf-indexes.mjs",
+    "validate:refs": "node refs/tools/validate-refs.mjs",
+    "prebuild": "npm run check:case-collisions",
     "build": "npm run build -w @application-trail/domain && npm run build -w @application-trail/api && npm run build -w @application-trail/extension && npm run build -w @application-trail/web",
+    "pretypecheck": "npm run check:case-collisions",
     "typecheck": "npm run build -w @application-trail/domain && npm run typecheck --workspaces --if-present",
     "test": "npm run build && node --test tests/*.test.mjs",
-    "validate": "npm run typecheck && npm test",
+    "validate": "npm run validate:refs && npm run typecheck && npm test",
     "dev": "node --env-file=.env.local scripts/dev.mjs",
     "migrate": "node --env-file=.env.local apps/api/scripts/migrate.mjs",
     "start:api": "node --env-file=.env.local apps/api/dist/server.js",
@@ -19,7 +24,8 @@
   },
   "devDependencies": {
     "@types/node": "22.15.0",
-    "typescript": "5.8.3"
+    "typescript": "5.8.3",
+    "yaml": "^2.8.1"
   },
   "engines": {
     "node": ">=22.0.0"

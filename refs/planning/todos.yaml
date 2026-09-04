@@ -1,0 +1,23 @@
+version: 1
+updated: 2026-09-04
+todos:
+  - id: wp3-hosted-deployment
+    status: active
+    summary: Deploy the accepted WP3 repository implementation to the existing studio VPS at the canonical Application Trail origin.
+    refs:
+      - refs/deployment/wp3-hosted-deployment.md
+      - refs/handoffs/next-dev-prompt.md
+  - id: wp3-google-oauth-live-config
+    status: pending
+    summary: Confirm reuse of the existing studio Google Web OAuth client, add the exact hosted callback, and configure production credentials outside Git.
+    refs:
+      - refs/deployment/wp3-hosted-deployment.md
+      - refs/architecture/security-and-secrets.md
+  - id: wp3-cross-machine-dogfood
+    status: blocked
+    summary: Validate extension capture on machine A and same-account retrieval on machine B after hosted deployment and OAuth configuration are live.
+    blocked_by:
+      - wp3-hosted-deployment
+      - wp3-google-oauth-live-config
+    refs:
+      - refs/handoffs/currentHandoff.md

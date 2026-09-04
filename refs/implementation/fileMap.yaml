@@ -1,0 +1,57 @@
+version: 1
+updated: 2026-09-04
+areas:
+  browser-capture:
+    guidance:
+      - AGENTS.md
+      - refs/product/product-requirements.md
+      - refs/architecture/system-architecture.md
+    source_roots:
+      - apps/extension
+    notes: Chromium capture surface, lightweight review, hosted sign-in pairing, and full-app handoff.
+  web-management:
+    guidance:
+      - refs/product/product-requirements.md
+      - refs/architecture/system-architecture.md
+    source_roots:
+      - apps/web
+    notes: Same-origin management UI and cross-machine opportunity retrieval.
+  api-auth-persistence:
+    guidance:
+      - refs/architecture/domain-model.md
+      - refs/architecture/security-and-secrets.md
+      - refs/deployment/wp3-hosted-deployment.md
+    source_roots:
+      - apps/api/src
+      - apps/api/migrations
+    notes: Identity boundary, authorization, canonical persistence, Google OAuth, and Application Trail sessions.
+  shared-domain:
+    guidance:
+      - refs/architecture/domain-model.md
+    source_roots:
+      - packages/domain
+    notes: Shared TypeScript domain types and invariants.
+  developer-orchestration:
+    guidance:
+      - refs/deployment/wp3-hosted-deployment.md
+      - refs/testing/validationCommands.yaml
+    source_roots:
+      - scripts/dev.mjs
+      - scripts/check-case-collisions.mjs
+      - package.json
+    notes: One-command local orchestration and repository safety checks.
+  project-memory:
+    guidance:
+      - refs/agents.yaml
+      - refs/okfProfile.yaml
+      - refs/implementation/okfCompatibility.md
+    source_roots:
+      - refs
+    notes: Durable Application Trail project truth and OKF-compatible discovery surface.
+  validation:
+    guidance:
+      - refs/testing/validationCommands.yaml
+    source_roots:
+      - tests
+      - .github/workflows/ci.yml
+    notes: Automated type, build, PostgreSQL integration, refs, and cross-platform path validation.

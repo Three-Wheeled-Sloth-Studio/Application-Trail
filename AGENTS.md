@@ -2,17 +2,23 @@
 
 Application Trail is a public-first product. Treat the repository as if every committed file will be visible to users and competitors.
 
-## Read first
+## Agent Academy operating model
+
+`refs/agents.yaml` is the authoritative agent operating-rules file for this repository. `refs/index.md` is the generated OKF discovery surface, not a replacement for the required reading order.
 
 Before implementation work, read:
 
-1. `refs/project.yaml`
-2. `refs/product/product-requirements.md`
-3. `refs/architecture/system-architecture.md`
-4. `refs/architecture/domain-model.md`
-5. `refs/architecture/security-and-secrets.md`
-6. `refs/handoffs/currentHandoff.md`
-7. `refs/handoffs/next-dev-prompt.md`
+1. `refs/agents.yaml`
+2. `refs/project.yaml`
+3. `refs/planning/mvp-roadmap.md`
+4. `refs/planning/todos.yaml`
+5. `refs/handoffs/currentHandoff.md`
+6. `refs/implementation/fileMap.yaml`
+7. `refs/testing/validationCommands.yaml`
+
+Then read the product, architecture, deployment, or handoff references relevant to the slice.
+
+Do not hand-edit generated `refs/**/index.md` files. Regenerate them with `npm run generate:refs`.
 
 ## Product rules
 
@@ -44,8 +50,22 @@ Before implementation work, read:
 - End-user hosted-provider API keys should be stored locally through a protected credential-store boundary, not in PostgreSQL and not in Chrome sync storage.
 - Development secrets may use ignored `.env.local` files.
 
+## Project-memory rules
+
+- Keep durable project truth in `refs/`, not only in chat.
+- Preserve OKF frontmatter on non-reserved Markdown concepts under `refs/`.
+- Record durable implementation decisions in `refs/planning/decisions.yaml`.
+- Record unresolved project facts in `refs/planning/openQuestions.yaml` instead of guessing.
+- Update `refs/planning/todos.yaml` and `refs/handoffs/currentHandoff.md` when work state materially changes.
+- Never infer OKF `verified` status from passing tests, generated indexes, Git history, or refs validation.
+- Preserve the existing Application Trail refs organization. Agent Academy alignment is additive, not a reason to duplicate or rearrange mature project truth.
+
+## Cross-platform path rule
+
+Never create, rename, or retain two tracked paths that differ only by letter casing. The Git index is authoritative for collision checks. Run `npm run check:case-collisions`, and use a temporary intermediate filename for case-only renames.
+
 ## Development approach
 
-Favor thin end-to-end slices over broad framework construction. The first useful executable slice should capture one real listing and persist/retrieve it. Add abstraction only where a known requirement already creates the seam.
+Favor thin end-to-end slices over broad framework construction. Add abstraction only where a known requirement already creates the seam.
 
-Update the handoff files whenever pausing at a meaningful checkpoint.
+Before finishing a change, run the validation appropriate to the slice. `npm run validate` is the normal full repository gate.

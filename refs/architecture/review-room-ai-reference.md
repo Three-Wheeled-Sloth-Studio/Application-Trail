@@ -1,3 +1,10 @@
+---
+type: Architecture Reference
+title: Review Room AI Reference
+description: Reusable provider, local-AI, structured-output, credential, and full-tab patterns relevant to Application Trail.
+status: stable
+tags: [application-trail, ai, review-room, ollama]
+---
 # Review Room AI Reference
 
 Application Trail should reuse proven ideas from `Three-Wheeled-Sloth-Studio/Review-Room` without copying its current browser-only constraints blindly.

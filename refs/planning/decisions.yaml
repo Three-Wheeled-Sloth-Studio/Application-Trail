@@ -1,0 +1,29 @@
+version: 1
+updated: 2026-09-04
+decisions:
+  - id: wp3-single-origin-hosting
+    status: accepted
+    date: 2026-08-30
+    decision: Host Application Trail web, API, and authentication under https://trail.threewheeledsloth.com with API and auth routed by path.
+    rationale: Same-origin hosting minimizes CORS, cookie, OAuth-origin, TLS, and deployment complexity for the dogfood gate.
+    consequences:
+      - PostgreSQL remains private.
+      - The API remains loopback-only behind the existing VPS reverse proxy.
+      - A separate public API hostname is deferred until evidence justifies it.
+  - id: wp3-google-sub-identity
+    status: accepted
+    date: 2026-08-30
+    decision: Use Google sub as the durable external identity key while retaining internal Application Trail UUIDs as canonical ownership keys.
+    rationale: Google sub is stable for provider identity while internal UUIDs keep domain ownership provider-neutral.
+    consequences:
+      - Email is display metadata, not the ownership key.
+      - Web and extension receive Application Trail sessions rather than durable Google tokens.
+  - id: agent-academy-okf-alignment
+    status: accepted
+    date: 2026-09-04
+    decision: Adopt Agent Academy OKF v0.2 compatibility additively without replacing Application Trail's established refs taxonomy.
+    rationale: The mature custom-refs migration preserves useful project truth while enabling portable discovery, validation, and future studio-catalog indexing.
+    consequences:
+      - Existing Markdown concepts gain OKF frontmatter.
+      - Generated indexes are committed and validated.
+      - Agent Academy operating rules and case-collision safeguards join the normal repository workflow.

@@ -1,3 +1,10 @@
+---
+type: Architecture Overview
+title: Application Trail System Architecture
+description: Modular-monolith topology and responsibility boundaries for extension, web, API, PostgreSQL, and optional local AI bridge.
+status: stable
+tags: [application-trail, architecture, modular-monolith]
+---
 # System Architecture
 
 ## Architectural bias

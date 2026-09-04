@@ -2,8 +2,14 @@ name: Application Trail
 repository: Three-Wheeled-Sloth-Studio/Application-Trail
 visibility: public
 license: AGPL-3.0
-status: wp3-design-review
+status: wp3-hosted-deployment
 product_type: hosted-service-with-public-code
+
+agent_academy:
+  aligned_commit: 16691651776151a7eb1ebf13d99a92658e0684e6
+  okf_profile: refs/okfProfile.yaml
+  operating_instructions: refs/agents.yaml
+  discovery: refs/index.md
 
 purpose: >
   Capture job opportunities and applications with minimal browser friction,
@@ -20,8 +26,8 @@ initial_user:
 identity:
   intended_provider: Google OAuth
   custom_password_auth_mvp: false
-  current_implementation: gated-local-development-identity
-  wp3_auth_design_status: review-required
+  current_implementation: google-oauth-and-opaque-application-trail-sessions
+  wp3_auth_design_status: implemented-hosted-validation-pending
 
 persistence:
   canonical_store: PostgreSQL
@@ -31,9 +37,10 @@ persistence:
   independent_application_database: application_trail
 
 hosting:
-  production_web_domain: not-yet-selected
-  production_api_url: not-yet-selected
-  production_web_deployment: not-yet-selected
+  production_web_domain: trail.threewheeledsloth.com
+  production_origin: https://trail.threewheeledsloth.com
+  production_api_url: https://trail.threewheeledsloth.com/api
+  production_web_deployment: existing-hostinger-vps-pending-live-validation
   local_web_url: http://127.0.0.1:4320
   local_api_url: http://127.0.0.1:4310
 
@@ -59,14 +66,12 @@ core_invariants:
   - secrets_and_user_data_never_enter_public_git
 
 current_executable_slice: >
-  A Chromium Manifest V3 extension can inspect a real page, preview generic
-  JobPosting metadata, save as Saved or Applied through the API, persist an
-  Opportunity plus Listing Observation and immutable Snapshot in PostgreSQL,
-  and open the persisted record in the local web application. Manual WP2 smoke
-  passed against a real job listing and the application was successfully marked Applied.
+  WP0 through WP2 are accepted. WP3 repository implementation adds Google identity,
+  opaque web and extension sessions, extension pairing, same-origin hosted routing,
+  a cross-machine opportunity list, and one-command local orchestration. Hosted VPS,
+  HTTPS, Google client configuration, and the live cross-machine smoke remain the current gate.
 
 next_gate: >
-  Review and approve the WP3 deployment and authentication topology before implementation.
-  In particular, choose the hosted web/API arrangement and production domain/URL strategy,
-  then confirm the Google OAuth redirect/session approach. Do not implement WP3 authentication
-  until this review is complete.
+  Complete the hosted WP3 deployment at https://trail.threewheeledsloth.com,
+  configure the exact Google OAuth callback, and pass the cross-machine dogfood gate
+  before beginning WP4 extraction or enrichment.

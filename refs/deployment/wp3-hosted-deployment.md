@@ -1,3 +1,10 @@
+---
+type: Deployment Contract
+title: WP3 Hosted Deployment Contract
+description: Accepted production topology, environment, OAuth callback, deployment sequence, and hosted validation gate for WP3.
+status: stable
+tags: [application-trail, wp3, deployment, oauth]
+---
 # WP3 Hosted Deployment Contract
 
 Date: 2026-08-30
